@@ -1,6 +1,5 @@
 #include "HT1621_universal.h"
 
-/* 0,1,2,3,4,5,6,7,8,9,A,b,C,c,d,E,F,H,h,L,n,N,o,P,r,t,U,-, ,° */
 const uint8_t HT1621_universal::num[] = {
     0x7D, 0x60, //0, 1
     0x3E, 0x7A, //2, 3
@@ -21,12 +20,12 @@ const uint8_t HT1621_universal::num[] = {
 HT1621_universal::HT1621_universal(uint8_t csPin, uint8_t wrPin, uint8_t dataPin):csPin(csPin), wrPin(wrPin), dataPin(dataPin) {
 }
 
-inline uint8_t HT1621_universal::sbi(uint8_t x, uint8_t y) {
-    return x |= (1 << y);
+inline uint8_t HT1621_universal::sbi(uint8_t * x, uint8_t y) {
+    return (*x |= (1 << y));
 }
 
-inline uint8_t HT1621_universal::cbi(uint8_t x, uint8_t y) {
-    return x |= (1 << y);
+inline uint8_t HT1621_universal::cbi(uint8_t * x, uint8_t y) {
+    return (*x &= ~(1 << y));
 }
 
 void HT1621_universal::SendBit_1621(uint8_t sdata, uint8_t cnt) {
@@ -95,20 +94,52 @@ void HT1621_universal::init(void) {
 }
 
 void HT1621_universal::displaydata(int p) {
-    uint8_t i=0;
     switch(p) {
         case 1:
-        sbi(dispnum[0], 7);
+        sbi(&(dispnum[0]), 7);
         break;
         case 2:
-        sbi(dispnum[1], 7);
+        sbi(&(dispnum[1]), 7);
         break;
         case 3:
-        sbi(dispnum[2], 7);
+        sbi(&(dispnum[2]), 7);
         break;
         default:break;
     }
-    for(i = 0; i <= 5; i++) {
+}
+void HT1621_universal::displayCelsius(float temperature) {
+    
+    uint16_t dispTemperature = uint16_t(abs(temperature * 10.f) + 0.5);
+    uint16_t remainder = 0;
+
+    dispnum[0] = num[12];  // C
+    dispnum[1] = num[28];  // degree
+
+    remainder = dispTemperature % 10;
+    dispnum[2] = num[remainder];
+    dispTemperature -= remainder;
+    dispTemperature /= 10;
+
+    remainder = dispTemperature % 10;
+    dispnum[3] = num[remainder];
+    dispTemperature -= remainder;
+    dispTemperature /= 10;
+
+    remainder = dispTemperature % 10;
+    dispnum[4] = num[remainder];
+    dispTemperature -= remainder;
+    dispTemperature /= 10;
+
+    if(temperature < 0.f) {
+        dispnum[5] = num[26];  // -
+        temperature = - temperature;
+    }
+    else
+        dispnum[5] = num[27];  // " "
+
+    sbi(&(dispnum[2]), 7);  //set decimal pointer
+
+    for(uint8_t i = 0; i <= 5; i++) {   //display the result
         Write_1621(i*2, dispnum[i]);
     }
 }

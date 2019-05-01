@@ -9,7 +9,8 @@ HT1621_universal lcd(csPin, wrPin, dataPin);
 
 void setup() {
     lcd.init();
-    
+    lcd.HT1621_all_on(16);
+    delay(1000);
     lcd.Write_1621(0,lcd.num[0]);  //0
     lcd.Write_1621(2,lcd.num[1]);  //1
     lcd.Write_1621(4,lcd.num[2]);  //2
@@ -24,12 +25,6 @@ void setup() {
 }
  
 void loop() {
-    
-    lcd.Write_1621(6,lcd.num[1]);
-    lcd.Write_1621(4,lcd.num[7]);
-    lcd.Write_1621(2,lcd.num[28]);  // degree
-    lcd.Write_1621(0,lcd.num[12]);  // C
-
+    lcd.displayCelsius(18.3);
     delay(2000);
-    Serial.println(F_CPU);
 }

@@ -17,12 +17,11 @@ class HT1621_universal {
     static const uint8_t delayUs = 1;
 
 public:
-    /* 0,1,2,3,4,5,6,7,8,9,A,b,C,c,d,E,F,H,h,L,n,N,o,P,r,t,U,-, ,° */
     static const uint8_t num[];
-    char dispnum[6]={0x00,0x00,0x00,0x00,0x00,0x00};
+    uint8_t dispnum[6]={0x00,0x00,0x00,0x00,0x00,0x00};
 
-    inline uint8_t sbi(uint8_t x, uint8_t y);
-    inline uint8_t cbi(uint8_t x, uint8_t y);
+    inline uint8_t sbi(uint8_t * x, uint8_t y);
+    inline uint8_t cbi(uint8_t * x, uint8_t y);
     void SendBit_1621(uint8_t sdata, uint8_t cnt);
     void SendCmd_1621(uint8_t command);
     void Write_1621(uint8_t addr, uint8_t sdata);
@@ -30,10 +29,9 @@ public:
     void HT1621_all_on(uint8_t num);
     void init(void);
     void displaydata(int p);
+    void displayCelsius(float temperature);
 
     HT1621_universal(uint8_t csPin, uint8_t wrPin, uint8_t dataPin);
 };
-
-
 
 #endif //_HT1621_UNIVERSAL_
